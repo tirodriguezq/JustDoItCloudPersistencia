@@ -8,6 +8,8 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import teccr.justdoitcloud.data.Task;
 import teccr.justdoitcloud.data.User;
+import teccr.justdoitcloud.service.TaskService;
+
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -16,9 +18,21 @@ import java.time.LocalDateTime;
 @SessionAttributes("user")
 public class UserTasksController {
 
+    private final TaskService taskService;
+
+    public UserTasksController(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
     @GetMapping
     public String showUserTasks(Model model) {
         model.addAttribute("newTask", new Task("", LocalDateTime.now(), null, Task.Status.INPROGRESS));
+        // Retrieve user tasks and add to user object in session
+        User user = (User) model.getAttribute("user");
+        if (user != null) {
+            user.setTasks(taskService.getTasksForUser(user.getUserName()));
+        }
+
         return "usertasks";
     }
 
@@ -31,7 +45,7 @@ public class UserTasksController {
             return "usertasks";
         }
 
-        user.addTask(newTask);
+        taskService.addTaskToUser(user.getUserName(), newTask);
         return "redirect:/user/tasks";
     }
 }

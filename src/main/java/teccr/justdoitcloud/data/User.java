@@ -12,14 +12,14 @@ public class User {
     private final String name;
     private final String email;
     private final Type type;
-    private List<Task> tasks = new ArrayList<>();
+    private List<Task> tasks;
 
     public enum Type {
         ADMIN,
         REGULAR
     }
 
-    public void addTask(Task task) {
-        this.tasks.add(task);
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 }

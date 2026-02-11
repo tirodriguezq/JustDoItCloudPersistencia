@@ -1,13 +1,8 @@
 package teccr.justdoitcloud.repository;
 
 import org.springframework.stereotype.Repository;
-import teccr.justdoitcloud.data.Task;
 import teccr.justdoitcloud.data.User;
 
-import jakarta.annotation.PostConstruct;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -15,19 +10,7 @@ import java.util.Optional;
  * This is a temporary implementation until a persistence layer is added.
  */
 @Repository
-public class UserRepositoryImpl implements UserRepository {
-
-    private final List<Task> defaultTasks = new ArrayList<>();
-
-    @PostConstruct
-    public void init() {
-        // Initialize default tasks list
-        Task task = new Task("Comprar Leche", LocalDateTime.now(), null, Task.Status.DONE);
-        defaultTasks.add(task);
-        task = new Task("Reparacion de sistema de frenos del carro", LocalDateTime.now(),
-                LocalDateTime.now().plusDays(3).toLocalDate(), Task.Status.INPROGRESS);
-        defaultTasks.add(task);
-    }
+public class UserRepositoryInMemoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByUserName(String userName) {
@@ -36,7 +19,6 @@ public class UserRepositoryImpl implements UserRepository {
         }
         String trimmedUserName = userName.trim();
         User user = new User(trimmedUserName, toDisplayName(trimmedUserName), toEmail(trimmedUserName), User.Type.REGULAR);
-        defaultTasks.forEach(user::addTask);
         return Optional.of(user);
     }
 
