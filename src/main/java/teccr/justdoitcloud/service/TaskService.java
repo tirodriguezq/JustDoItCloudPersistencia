@@ -24,4 +24,36 @@ public class TaskService {
         task.setUserId(user.getId());
         taskRepository.save(task);
     }
+
+    public void advanceTaskStatus(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new IllegalArgumentException("Task no existe con id: " + taskId));
+
+        Task.Status nextStatus = getNextStatus(task.getStatus());
+
+        Task updatedTask = new Task(
+                task.getId(),
+                task.getDescription(),
+                task.getCreatedAt(),
+                task.getDeadline(),
+                nextStatus
+        );
+        updatedTask.setUserId(task.getUserId());
+
+        taskRepository.save(updatedTask);
+    }
+
+    private Task.Status getNextStatus(Task.Status current) {
+        if (current == null) return Task.Status.PENDING;
+
+        switch (current) {
+            case PENDING:
+                return Task.Status.INPROGRESS;
+            case INPROGRESS:
+                return Task.Status.DONE;
+            case DONE:
+            default:
+                return Task.Status.DONE;
+        }
+    }
 }

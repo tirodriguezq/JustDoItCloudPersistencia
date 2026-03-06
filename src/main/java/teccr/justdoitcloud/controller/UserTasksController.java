@@ -26,8 +26,8 @@ public class UserTasksController {
 
     @GetMapping
     public String showUserTasks(Model model) {
-        model.addAttribute("newTask", new Task( null, "", LocalDateTime.now(), null, Task.Status.INPROGRESS));
-        // Retrieve user tasks and add to user object in session
+        model.addAttribute("newTask", new Task(null, "", LocalDateTime.now(), null, Task.Status.INPROGRESS));
+
         User user = (User) model.getAttribute("user");
         if (user != null) {
             user.setTasks(taskService.getTasksForUser(user));
@@ -46,6 +46,12 @@ public class UserTasksController {
         }
 
         taskService.addTaskToUser(user, newTask);
+        return "redirect:/user/tasks";
+    }
+
+    @PostMapping("/{taskId}/advance")
+    public String advanceTask(@PathVariable Long taskId) {
+        taskService.advanceTaskStatus(taskId);
         return "redirect:/user/tasks";
     }
 }
